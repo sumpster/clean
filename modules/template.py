@@ -22,12 +22,12 @@ class Template:
 
 
     def apply(self, **kwargs):
-        fields = sorted([field for field in kwargs if kwargs[field] != ""])
+        fields = sorted([field for field in kwargs if kwargs[field] != "" or field == "output"])
         key = ','.join(fields)
 
         if not self.templates:
-            if len(fields) != 1:
-                raise KeyError(f"Without template there must be exactly one field. Found: {fields}")
+            if len(fields) != 2:
+                raise KeyError(f"Without template there must be exactly one input and one output field. Found: {fields}")
             return kwargs[fields[0]]
 
         template = self.templates[key]
