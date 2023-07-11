@@ -38,7 +38,7 @@ def main(s : str = None, q : str = None):
     settings = Settings(s)
     settings.print()
 
-    model = Model(settings)
+    model = Model(settings, trainable=False)
     templatePath = settings.ui.templatePath
     if not templatePath:
         templatePath = settings.templatePath

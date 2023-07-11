@@ -49,7 +49,7 @@ class Tokenizer:
 
 
 class Model:
-    def __init__(self, settings : Settings):
+    def __init__(self, settings : Settings, trainable=True):
         assert settings.base.bits in (4, 8, 16), '"bits" must be 4, 8 or 16'
         self.settings = settings
         self.model = AutoModelForCausalLM.from_pretrained(
@@ -77,7 +77,7 @@ class Model:
                 is_trainable=True,
                 torch_dtype=torch.float16
             )
-        else:
+        elif trainable:
             config = LoraConfig(
                 r=adset.loraR,
                 lora_alpha=adset.loraAlpha,
