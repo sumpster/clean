@@ -26,6 +26,7 @@ Example config:
 		"loggingSteps" : 2
 	},
 	"ui" : {
+		"title" : "Test",
 		"inputFields" : "instruction"
 	},
 	"templatePath" : "data/test/mytemplate.json"
