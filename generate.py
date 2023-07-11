@@ -1,4 +1,5 @@
 #!/usr/bin/python
+import os
 import re
 
 import fire
@@ -34,25 +35,33 @@ def ui(model : Model, settings : Settings, template : Template):
 
 
 def main(s : str = None, q : str = None):
-    assert s, "Must provide settings file name"
-    settings = Settings(s)
-    settings.print()
+    originalCwd = os.getcwd()
+    try:
+        assert s, "Must provide settings file name"
+        baseDir = os.path.dirname(s)
+        os.chdir(baseDir)
 
-    model = Model(settings, trainable=False)
-    templatePath = settings.ui.templatePath
-    if not templatePath:
-        templatePath = settings.templatePath
-    template = Template(templatePath)
-    
-    if q:
-        request = template.apply(input=q, output="")
-        result = model.generate(request)
-        for r in result:
-            print(r, end="", flush=True)
-        print()
+        settings = Settings(os.path.basename(s))
+        settings.print()
 
-    else:
-        ui(model, settings, template)
+        model = Model(settings, trainable=False)
+        templatePath = settings.ui.templatePath
+        if not templatePath:
+            templatePath = settings.templatePath
+        template = Template(templatePath)
+        
+        if q:
+            request = template.apply(input=q, output="")
+            result = model.generate(request)
+            for r in result:
+                print(r, end="", flush=True)
+            print()
+
+        else:
+            ui(model, settings, template)
+
+    finally:
+        os.chdir(originalCwd)
 
 
 if __name__ == "__main__":

@@ -1,4 +1,5 @@
 #!/usr/bin/python
+import os
 
 import fire
 
@@ -8,15 +9,23 @@ from modules.model import Model
 
 
 def main(s : str = None):
-    assert s, "Must provide settings file name"
-    settings = Settings(s)
-    settings.print()
+    originalCwd = os.getcwd()
+    try:
+        assert s, "Must provide settings file name"
+        baseDir = os.path.dirname(s)
+        os.chdir(baseDir)
 
-    model = Model(settings)
-    dp = DataProcessor(settings.templatePath)
-    data = dp.loadData(settings.training.dataPath)
-    print(f"Training data length: {len(data)}")
-    model.train(data)
+        settings = Settings(os.path.basename(s))
+        settings.print()
+
+        model = Model(settings)
+        dp = DataProcessor(settings.templatePath)
+        data = dp.loadData(settings.training.dataPath)
+        print(f"Training data length: {len(data)}")
+        model.train(data)
+
+    finally:
+        os.chdir(originalCwd)
 
 
 if __name__ == "__main__":
