@@ -13,7 +13,7 @@ class BaseSettings:
 class AdapterSettings:
     path : str = None
     type : str = "LoRA"
-    loraModules : str
+    loraModules : str = None
     loraR : int = 16
     loraAlpha : int = 16
     loraDropout : float = 0.05
@@ -38,6 +38,7 @@ class TrainingSettings:
 
 @dataclass
 class UiSettings:
+    title : str = ""
     templatePath : str = None
     inputFields : str = "input"
 
