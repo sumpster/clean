@@ -5,6 +5,7 @@ import re
 import fire
 import gradio as gr
 
+from modules.launcher import launch
 from modules.settings import Settings
 from modules.template import Template
 from modules.model import Model
@@ -35,34 +36,25 @@ def ui(model : Model, settings : Settings, template : Template):
 
 
 def main(s : str = None, q : str = None):
-    originalCwd = os.getcwd()
-    try:
-        assert s, "Must provide settings file name"
-        baseDir = os.path.dirname(s)
-        os.chdir(baseDir)
+	settings = Settings(s)
+	settings.print()
 
-        settings = Settings(os.path.basename(s))
-        settings.print()
+	model = Model(settings, trainable=False)
+	templatePath = settings.ui.templatePath
+	if not templatePath:
+		templatePath = settings.templatePath
+	template = Template(templatePath)
+	
+	if q:
+		request = template.apply(instruction=q, output="")
+		result = model.generate(request)
+		for r in result:
+			print(r, end="", flush=True)
+		print()
 
-        model = Model(settings, trainable=False)
-        templatePath = settings.ui.templatePath
-        if not templatePath:
-            templatePath = settings.templatePath
-        template = Template(templatePath)
-        
-        if q:
-            request = template.apply(input=q, output="")
-            result = model.generate(request)
-            for r in result:
-                print(r, end="", flush=True)
-            print()
-
-        else:
-            ui(model, settings, template)
-
-    finally:
-        os.chdir(originalCwd)
+	else:
+		ui(model, settings, template)
 
 
 if __name__ == "__main__":
-    fire.Fire(main)
+    launch(main)
