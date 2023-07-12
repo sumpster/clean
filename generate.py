@@ -2,7 +2,6 @@
 import os
 import re
 
-import fire
 import gradio as gr
 
 from modules.launcher import launch

@@ -1,8 +1,6 @@
 #!/usr/bin/python
 import os
 
-import fire
-
 from modules.launcher import launch
 from modules.settings import Settings
 from modules.data import DataProcessor
