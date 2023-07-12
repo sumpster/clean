@@ -26,6 +26,7 @@ class TrainingSettings:
 
     epochs : int = 10
     learningRate : float = 3e-4
+    weightDecay : float = 0
     cutoff : int = 256
     batchSize : int = 4
     accumulationSteps : int = 32

@@ -143,6 +143,7 @@ class Model:
             warmup_steps=trset.warmupSteps,
             num_train_epochs=trset.epochs,
             learning_rate=trset.learningRate,
+            weight_decay=trset.weightDecay,
             fp16=True,
             logging_steps=trset.loggingSteps,
             optim="adamw_torch",
