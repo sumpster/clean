@@ -205,3 +205,8 @@ class Model:
                 else:
                     yield text
             thread.join()
+
+
+    def dumpDetails(self):
+        for name, parameter in self.model.named_parameters():
+            print(f"{name}  Shape: {list(parameter.shape)}")
