@@ -2,6 +2,12 @@ This project aims at simplifying playing around with LLM fine-tuning.
 It uses json config files to let you specify base model, adapter and training set settings.
 Comes with simple finetuning and generate scripts for testing.
 
+| App | Function |
+|-----------------|-----------------|
+| finetune.py | Fine-tuning training run |
+| generate.py | UI & Command line based generation |
+| stats.py | Dumps model statistics (tensors & shapes) |
+
 Example config:
 ```
 {
