@@ -11,10 +11,10 @@ from modules.model import Model
 
 
 def ui(model : Model, settings : Settings, template : Template):
-    def query(query : str, temp : float = 0.05, top_p: float = 0.9, top_k : int = 50):
+    def query(query : str, limit: int = 128, temp : float = 0.05, top_p: float = 0.9, top_k : int = 50):
         full = ""
         request = template.apply(instruction=query, output="")
-        for r in model.generate(request, limit=256, temp=temp, top_p=top_p, top_k=top_k):
+        for r in model.generate(request, limit=limit, temp=temp, top_p=top_p, top_k=top_k):
             print(r, end="")
             full += r
             yield full.strip()
@@ -25,11 +25,12 @@ def ui(model : Model, settings : Settings, template : Template):
         input = gr.Textbox(label="Input")
         output = gr.Textbox(label="Output")
         with gr.Accordion("Settings", open=False):
+            limit = gr.Slider(minimum=64, maximum=512, step=1, value=128, label="Limit")
             temp = gr.Slider(minimum=0, maximum=1, value=0.1, label="Temperature")
             top_p = gr.Slider(minimum=0, maximum=1, value=0.75, label="Top p")
             top_k = gr.Slider(minimum=0, maximum=100, step=1, value=40, label="Top k")
 
-        input.submit(query, inputs=[input, temp, top_p, top_k], outputs=output)
+        input.submit(query, inputs=[input, limit, temp, top_p, top_k], outputs=output)
 
     app.queue().launch()   
 
