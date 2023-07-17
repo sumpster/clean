@@ -22,7 +22,7 @@ class Template:
 
 
     def apply(self, **kwargs):
-        fields = sorted([field for field in kwargs if kwargs[field] != "" or field == "output"])
+        fields = sorted([field for field in kwargs if kwargs[field] or field == "output"])
         key = ','.join(fields)
 
         if not self.templates:
