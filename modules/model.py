@@ -208,6 +208,12 @@ class Model:
             thread.join()
 
 
+    def embeddings(self, input):
+        tokens = self.tokenizer.tokenizer(input, return_tensors='pt', add_special_tokens=False)['input_ids']
+        count = tokens.shape[1]
+        embeddings = self.model.model.embed_tokens(tokens)
+        return embeddings.view(count, -1)
+
     def dumpDetails(self):
         for name, parameter in self.model.named_parameters():
             print(f"{name}  Shape: {list(parameter.shape)}")

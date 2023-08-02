@@ -7,6 +7,7 @@ Comes with simple finetuning and generate scripts for testing.
 | finetune.py | Fine-tuning training run |
 | generate.py | UI & Command line based generation |
 | stats.py | Dumps model statistics (tensors & shapes) |
+| embed.py | Show token embedding matrix for list of tokens |
 
 Example config:
 ```
