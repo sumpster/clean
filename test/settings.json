@@ -1,0 +1,35 @@
+{
+	"base" : {
+		"path" : "mymodel",
+		"bits" : 8
+	},
+	"adapter" : {
+		"type" : "LoRA",
+		"loraModules" : "q_proj,k_proj,v_proj,o_proj",
+		"loraR" : 40
+	},
+	"training" : {
+		"dataPath" : "mydata",
+		"templatePath" : "training.template",
+		"epochs" : 10,
+		"cutoff" : 1024,
+		"batchSize" : 4,
+		"accumulationSteps" : 32,
+		"groupByLength" : "True",
+		"checkpointSteps" : 50,
+		"checkpointLimit" : 5,
+		"loggingSteps" : 2
+	},
+	"inference" : {
+		"templatePath" : "inference.template",
+		"maxLength" : 2048,
+		"temperature" : 0.1,
+		"top_p" : 0.75,
+		"top_k" : 40
+	},
+	"ui" : {
+		"title" : "Test",
+		"inputFields" : "instruction"
+	},
+	"templatePath" : "unused.template"
+}
