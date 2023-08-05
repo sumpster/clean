@@ -15,7 +15,7 @@ class DataProcessor:
         return { "input" : self.template.apply(**data) }
 
 
-    def loadData(self, dataPath, randomize=True):
+    def loadData(self, dataPath, randomize=True, seed=None):
         if dataPath.endswith(".json"):
             dataset = datasets.load_dataset("json", data_files=dataPath)
         else:
@@ -23,7 +23,7 @@ class DataProcessor:
         
         data = dataset["train"]
         if randomize:
-            data = data.shuffle()
+            data = data.shuffle(seed=seed)
         if self.template.hasTemplate():
             data = data.map(self._applyTemplate)
         return data

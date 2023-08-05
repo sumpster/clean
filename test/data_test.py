@@ -14,8 +14,8 @@ def testLoadDataBasicRandomized():
     loadAndTestBasicData(randomize=True)
 
 def testLoadDataMixed():
-    dp = DataProcessor("test/data.template")
-    data = dp.loadData("test/data-mixed.json", randomize=False)
+    dp = DataProcessor("test/resources/data.template")
+    data = dp.loadData("test/resources/data-mixed.json", randomize=False)
     assert len(data) == 5
 
     for i, entry in enumerate(data, start=1):
@@ -26,8 +26,8 @@ def testLoadDataMixed():
 
 
 def loadAndTestBasicData(randomize):
-    dp = DataProcessor("test/data.template")
-    data = dp.loadData("test/data-basic.json", randomize=randomize, seed=42)
+    dp = DataProcessor("test/resources/data.template")
+    data = dp.loadData("test/resources/data-basic.json", randomize=randomize, seed=42)
 
     assert len(data) == 5
     assert 'input' in data.column_names
