@@ -1,0 +1,7 @@
+[
+	{"input" : "dp1", "output" : "data point 1"},
+	{"input" : "dp2", "add" : "", "output" : "data point 2"},
+	{"input" : "dp3", "add" : "3", "output" : "data point 3"},
+	{"input" : "dp4", "output" : "data point 4"},
+	{"input" : "dp5", "output" : "data point 5"}
+]
