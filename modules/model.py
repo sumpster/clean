@@ -58,9 +58,11 @@ class Model:
             settings.base.path,
             load_in_8bit=(settings.base.bits == 8),
             torch_dtype=torch.float16
-        ).to(self.device)
+        )
 
-        if settings.base.bits != 16:
+        if settings.base.bits >= 16:
+            self.model = self.model.to(self.device)
+        else:
             self.model = prepare_model_for_kbit_training(self.model)
 
         adset = settings.adapter
