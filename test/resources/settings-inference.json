@@ -1,0 +1,18 @@
+{
+	"base" : {
+		"path" : "gpt2",
+		"bits" : 16
+	},
+	"inference" : {
+		"templatePath" : "inference.template",
+		"maxLength" : 512,
+		"temperature" : 0.1,
+		"top_p" : 0.75,
+		"top_k" : 40
+	},
+	"ui" : {
+		"title" : "Test",
+		"inputFields" : "instruction"
+	},
+	"templatePath" : "unused.template"
+}

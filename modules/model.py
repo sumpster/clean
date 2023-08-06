@@ -49,6 +49,8 @@ class Tokenizer:
 
 
 class Model:
+    device = "cuda"
+
     def __init__(self, settings : Settings, trainable=True):
         assert settings.base.bits in (4, 8, 16), '"bits" must be 4, 8 or 16'
         self.settings = settings
@@ -56,7 +58,8 @@ class Model:
             settings.base.path,
             load_in_8bit=(settings.base.bits == 8),
             torch_dtype=torch.float16
-        )
+        ).to(self.device)
+
         if settings.base.bits != 16:
             self.model = prepare_model_for_kbit_training(self.model)
 
@@ -69,6 +72,14 @@ class Model:
         if not path:
             path = self._findLoadableModel(adset.path)
         print(f"Loading adapter from: {path}")
+
+        if trainable:
+            if not adset.loraModules:
+                trainable = False
+                print("Disabling trainable. No lora module settings found.")
+            if not settings.training.dataPath:
+                trainable = False
+                print("Disabling trainable. No training data path found in settings.")
 
         if path:
             self.model = PeftModel.from_pretrained(
@@ -171,6 +182,11 @@ class Model:
         self.tokenizer.addEOSToken(False)
         tokenizer = self.tokenizer.tokenizer
 
+        if tokenizer.eos_token:
+            eosPattern = re.compile(re.escape(tokenizer.eos_token) + '$')
+        else:
+            eosPattern = None
+
         inputs = tokenizer(input, return_tensors="pt")
         input_ids = inputs["input_ids"].to(self.model.device)
 
@@ -178,7 +194,9 @@ class Model:
             temperature=temp,
             top_p=top_p,
             top_k=top_k,
-            num_beams=1
+            num_beams=1,
+            eos_token_id=tokenizer.eos_token_id,
+            pad_token_id=tokenizer.pad_token_id
         )
 
         streamer = TextIteratorStreamer(tokenizer, skip_prompt=True)
@@ -192,11 +210,6 @@ class Model:
             streamer=streamer
         )
 
-        if tokenizer.eos_token:
-            eosPattern = re.compile(re.escape(tokenizer.eos_token) + '$')
-        else:
-            eosPattern = None
-
         with torch.no_grad():
             thread = Thread(target=self.model.generate, kwargs=kwargs)
             thread.start()
@@ -209,9 +222,9 @@ class Model:
 
 
     def embeddings(self, input):
-        tokens = self.tokenizer.tokenizer(input, return_tensors='pt', add_special_tokens=False)['input_ids']
+        tokens = self.tokenizer.tokenizer(input, return_tensors='pt', add_special_tokens=False)['input_ids'].to(self.device)
         count = tokens.shape[1]
-        embeddings = self.model.model.embed_tokens(tokens)
+        embeddings = self.model.get_input_embeddings()(tokens)
         return embeddings.view(count, -1)
 
     def dumpDetails(self):

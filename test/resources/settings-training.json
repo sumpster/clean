@@ -10,7 +10,7 @@
 	},
 	"training" : {
 		"dataPath" : "data-basic.json",
-		"templatePath" : "training.template",
+		"outputPath" : "../output/generated-adapter",
 		"epochs" : 1,
 		"cutoff" : 512,
 		"batchSize" : 4,
@@ -21,7 +21,6 @@
 		"loggingSteps" : 2
 	},
 	"inference" : {
-		"templatePath" : "inference.template",
 		"maxLength" : 512,
 		"temperature" : 0.1,
 		"top_p" : 0.75,
@@ -31,5 +30,5 @@
 		"title" : "Test",
 		"inputFields" : "instruction"
 	},
-	"templatePath" : "unused.template"
+	"templatePath" : "data.template"
 }

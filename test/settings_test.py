@@ -34,8 +34,8 @@ def testSectionDefaults():
 
 def testSectionParsing():
     settings = Settings('test/resources/settings.json')
-    assert settings.base.path == "mymodel"
-    assert settings.adapter.loraR == 40
-    assert settings.training.cutoff == 1024
-    assert settings.inference.maxLength == 2048
+    assert settings.base.path == "gpt2"
+    assert settings.adapter.loraR == 8
+    assert settings.training.cutoff == 512
+    assert settings.inference.maxLength == 512
     assert settings.ui.title == "Test"
