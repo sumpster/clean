@@ -1,3 +1,9 @@
+"""
+Integration test for model class.
+
+Uses huggingface libs and gpt2 model from huggingface repository. (https://huggingface.co/gpt2)
+Note: The model download is ~550MB. Model should be cached on disk using hf mechanisms.
+"""
 import os
 import pytest
 
@@ -27,6 +33,12 @@ def trainingModel():
     settings = Settings("settings-training.json")
     return Model(settings)
 
+
+def testUsedModel():
+    for sf in ["settings-inference.json", "settings-training.json"]:
+        settings = Settings(sf)
+        assert settings.base.path == "gpt2", "Update documentation on top when replacing model. Also consider download size and compute times for test."
+
 def testEmbeddings(inferenceModel):
     cat = inferenceModel.embeddings("cat")
     assert cat.shape[0] == 1
@@ -54,9 +66,16 @@ def testTrain(trainingModel):
         trainingModel.train(data)
         for f in adapterFiles:
             assert os.path.exists(f)
+
+    except RuntimeError as re:
+        assert not "unscale_() has already been called on this optimizer" in str(re),\
+            f"Unscale error can be caused at epoch boundary by accelerate / transformers bug. Check versions.\n{re}"
+        raise
+
     finally:
         deleteFiles(adapterFiles)
         os.rmdir(settings.training.outputPath)
+
 
 def deleteFiles(files):
     for f in files:

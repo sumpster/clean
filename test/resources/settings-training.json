@@ -11,10 +11,10 @@
 	"training" : {
 		"dataPath" : "data-basic.json",
 		"outputPath" : "../output/generated-adapter",
-		"epochs" : 1,
+		"epochs" : 3,
 		"cutoff" : 512,
-		"batchSize" : 4,
-		"accumulationSteps" : 32,
+		"batchSize" : 5,
+		"accumulationSteps" : 1,
 		"groupByLength" : "True",
 		"checkpointSteps" : 50,
 		"checkpointLimit" : 5,
