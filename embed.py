@@ -10,7 +10,7 @@ from modules.model import Model
 
 
 def embed(model, t):
-    emb = model.embeddings(t)
+    emb = model.lookupEmbeddings(t)
     if emb.shape[0] != 1:
         print(f"Warning: Input {t} does not tokenize into single token.")
     return emb[0]

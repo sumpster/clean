@@ -39,13 +39,19 @@ def testUsedModel():
         settings = Settings(sf)
         assert settings.base.path == "gpt2", "Update documentation on top when replacing model. Also consider download size and compute times for test."
 
-def testEmbeddings(inferenceModel):
-    cat = inferenceModel.embeddings("cat")
+def testlookupEmbeddings(inferenceModel):
+    cat = inferenceModel.lookupEmbeddings("cat")
     assert cat.shape[0] == 1
-    dog = inferenceModel.embeddings("dog")
+    dog = inferenceModel.lookupEmbeddings("dog")
     assert dog.shape[0] == 1
     s = cosine_similarity(cat[0], dog[0], dim=0)
     assert s > 0 and s < 1
+
+def testfindSimilarTokens(inferenceModel):
+    cat = inferenceModel.lookupEmbeddings("cat")[0]
+    results = inferenceModel.findSimilarTokens(cat, 10)
+    assert len(results) == 10
+    assert results[0] == ("cat", 1.0)
 
 def testGenerate(inferenceModel):
     result = inferenceModel.generate("hello", limit=5)

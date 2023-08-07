@@ -1,9 +1,11 @@
 import os
 import re
-from typing import Iterator
+from typing import Iterator, List, Tuple
 from threading import Thread
 
-import torch
+from torch import tensor, float16, no_grad, arange, mm # pylint: disable=no-name-in-module
+from torch.nn.functional import cosine_similarity
+
 from transformers import (
     AutoModelForCausalLM,
     AutoTokenizer,
@@ -57,7 +59,7 @@ class Model:
         self.model = AutoModelForCausalLM.from_pretrained(
             settings.base.path,
             load_in_8bit=(settings.base.bits == 8),
-            torch_dtype=torch.float16
+            torch_dtype=float16
         )
 
         if settings.base.bits >= 16:
@@ -88,7 +90,7 @@ class Model:
                 self.model,
                 path,
                 is_trainable=True,
-                torch_dtype=torch.float16
+                torch_dtype=float16
             )
         elif trainable:
             config = LoraConfig(
@@ -146,6 +148,9 @@ class Model:
             print(f"Continuing fine-tune from checkpoint {checkpoint}.")
         else:
             print("Starting new fine-tune.")
+
+        if len(dataSet) < trset.batchSize * trset.accumulationSteps:
+            print("Warning: Not enough data to fill gradient accumulation steps and/or batch size.")
 
         self.model.print_trainable_parameters()
 
@@ -212,7 +217,7 @@ class Model:
             streamer=streamer
         )
 
-        with torch.no_grad():
+        with no_grad():
             thread = Thread(target=self.model.generate, kwargs=kwargs)
             thread.start()
             for text in streamer:
@@ -223,11 +228,28 @@ class Model:
             thread.join()
 
 
-    def embeddings(self, input):
+    def lookupEmbeddings(self, input : str) -> tensor:
         tokens = self.tokenizer.tokenizer(input, return_tensors='pt', add_special_tokens=False)['input_ids'].to(self.device)
         count = tokens.shape[1]
         embeddings = self.model.get_input_embeddings()(tokens)
         return embeddings.view(count, -1)
+
+
+    def findSimilarTokens(self, tv : tensor, n : int = 1) -> List[Tuple[str, int]]:
+        tokenizer = self.tokenizer.tokenizer
+        vocab_size = tokenizer.vocab_size
+
+        ids = arange(vocab_size).to(self.device)
+        tokens = [tokenizer.convert_ids_to_tokens(id) for id in range(vocab_size)]
+        embeddings = self.model.get_input_embeddings()(ids)
+
+        tvn = tv.to(self.device) / tv.norm()
+        embeddingsn = embeddings / embeddings.norm(dim=1, keepdim=True)
+        similarities = mm(embeddingsn, tvn.unsqueeze(-1)).squeeze(-1)
+
+        result = list(zip(tokens, similarities.tolist()))
+        return sorted(result, key=lambda e: e[1], reverse=True)[:n]
+
 
     def dumpDetails(self):
         for name, parameter in self.model.named_parameters():
